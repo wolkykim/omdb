@@ -33,6 +33,13 @@ type Config struct {
 		PidFile  string
 		ErrorLog string
 	}
+	Default struct {
+		StatusUrl string
+		OutputEncoding int
+		MaxKeySize   int
+		MaxValueSize int
+		ListSize     int // maximum number of keys to send on list request
+	}
 	Database struct {
 		Directory  string
 		AutoCreate bool
@@ -45,10 +52,5 @@ type Config struct {
 		KeyFile   string
 		AccessLog string
 		LogRotate int
-	}
-	Limit struct {
-		MaxKeySize   int
-		MaxValueSize int
-		ListSize     int // maximum number of keys to send on list request
 	}
 }

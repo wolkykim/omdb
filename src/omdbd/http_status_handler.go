@@ -34,7 +34,7 @@ import (
 )
 
 func httpStatusHandler(w http.ResponseWriter, r *http.Request) (int, string) {
-	g_info.IncreaseCounter("status")
+	g_info.IncreaseCounter("http.status")
 
 	infomap := g_info.ToMap()
 

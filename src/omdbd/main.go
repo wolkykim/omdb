@@ -48,7 +48,7 @@ func main() {
 	g_info = info.New()
 	g_info.SetProperty("PRGNAME", PRGNAME)
 	g_info.SetProperty("VERSION", VERSION)
-	g_info.SetProperty("STARTED_AT", time.Now().Format(time.RFC3339))
+	g_info.SetProperty("STARTED", time.Now().Format(time.RFC3339))
 
 	// Parse commend-line arguments
 	if err := parseConfig(&conf); err != nil {

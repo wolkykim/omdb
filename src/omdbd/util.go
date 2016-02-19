@@ -70,6 +70,22 @@ func getHttpBody(r *http.Request) []byte {
 	return body
 }
 
+func urlencode(s string) string {
+	return strings.Replace(url.QueryEscape(s), "%2F", "/", -1)
+}
+
+func encodeKey(encoding int, k []byte) []byte {
+	if encoding == OUTPUT_ENCODING_BINARY {
+		return k
+	} else {
+		return []byte(urlencode(string(k)))
+	}
+}
+
+func genKeyPath(db string, keypath string) string {
+	return "/" + db + "/" + keypath
+}
+
 func floatToString(f float64) string {
 	// to convert a float number to a string
 	return strconv.FormatFloat(f, 'f', -1, 64)

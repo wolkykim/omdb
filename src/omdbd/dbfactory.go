@@ -68,6 +68,7 @@ func (self *DbFactory) Close() {
 	for dbname, db := range self.opendbs {
 		log.Println("close database:", dbname)
 		db.Close()
+		g_info.IncreaseCounter("db.close")
 	}
 	log.Println("Closed all open databases.")
 }
@@ -101,6 +102,7 @@ func (self *DbFactory) Open(dbname string) (*leveldb.DB, error) {
 	}
 	self.opendbs[dbname] = db
 	log.Println("open database:", dbname)
+	g_info.IncreaseCounter("db.open")
 	return db, nil
 }
 
@@ -113,6 +115,7 @@ func (self *DbFactory) NewIterator(dbname string) *leveldb.Iterator {
 	ro := leveldb.NewReadOptions()
 	defer ro.Close()
 	ro.SetFillCache(false)
+	g_info.IncreaseCounter("db.iterator")
 	return db.NewIterator(ro)
 }
 
@@ -121,22 +124,33 @@ func (self *DbFactory) Get(k *KeyInfo) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	g_info.IncreaseCounter("db.get")
 	return db.Get(self.ro, k.name)
 }
 
 func (self *DbFactory) Put(k *KeyInfo, v []byte) error {
-	if conf.Limit.MaxKeySize > 0 && len(k.name) > conf.Limit.MaxKeySize {
+	if conf.Default.MaxKeySize > 0 && len(k.name) > conf.Default.MaxKeySize {
 		return fmt.Errorf("Key name is too long.")
 	}
-	if conf.Limit.MaxValueSize > 0 && len(v) > conf.Limit.MaxValueSize {
+	if conf.Default.MaxValueSize > 0 && len(v) > conf.Default.MaxValueSize {
 		return fmt.Errorf("Value size is too long.")
 	}
-	
+
 	db, err := self.Open(k.db)
 	if err != nil {
 		return err
 	}
+	g_info.IncreaseCounter("db.put")
 	return db.Put(self.wo, k.name, v)
+}
+
+func (self *DbFactory) Delete(k *KeyInfo) error {
+	db, err := self.Open(k.db)
+	if err != nil {
+		return err
+	}
+	g_info.IncreaseCounter("db.del")
+	return db.Delete(self.wo, k.name)
 }
 
 func isValidDbName(str string) bool {
