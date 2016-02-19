@@ -70,7 +70,7 @@ func launchHttpListener(config *Config) error {
 	initSignals()
 
 	// Set up and launch HTTP listener
-	http.HandleFunc(conf.Default.StatusUrl, superHandler(httpStatusHandler))
+	http.HandleFunc(conf.Global.StatusUrl, superHandler(httpStatusHandler))
 	http.HandleFunc("/", validator(superHandler(httpRequestHandler)))
 
 	log.Printf("%s started - listening on %s://%s\n", PRGNAME, conf.Httplistener.Protocol, conf.Httplistener.Addr)

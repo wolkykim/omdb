@@ -129,10 +129,10 @@ func (self *DbFactory) Get(k *KeyInfo) ([]byte, error) {
 }
 
 func (self *DbFactory) Put(k *KeyInfo, v []byte) error {
-	if conf.Default.MaxKeySize > 0 && len(k.name) > conf.Default.MaxKeySize {
+	if conf.Global.MaxKeySize > 0 && len(k.name) > conf.Global.MaxKeySize {
 		return fmt.Errorf("Key name is too long.")
 	}
-	if conf.Default.MaxValueSize > 0 && len(v) > conf.Default.MaxValueSize {
+	if conf.Global.MaxValueSize > 0 && len(v) > conf.Global.MaxValueSize {
 		return fmt.Errorf("Value size is too long.")
 	}
 

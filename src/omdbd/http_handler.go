@@ -34,8 +34,16 @@ import (
 	"strings"
 )
 
+const (
+	OUTPUT_ENCODING_BINARY = 0
+	OUTPUT_ENCODING_URL    = 1
+	OUTPUT_ENCODING_BASE64 = 2
+	OUTPUT_ENCODING_JSON   = 3
+)
+
 type UrlOptions struct {
 	encoding int
+	html     bool
 	remove   bool
 
 	// used for list
@@ -91,9 +99,8 @@ func parseUrlOptions(r *http.Request) (*UrlOptions, error) {
 		encoding: OUTPUT_ENCODING_BINARY,
 	}
 
-	o := []string{conf.Default.QueryOption}
+	o := []string{conf.Global.QueryOption}
 	o = append(o, r.Form["o"]...)
-	g_debug.Println(o)
 	if o != nil {
 		for _, opt := range o {
 			for _, v := range strings.Split(opt, ",") {
@@ -105,6 +112,8 @@ func parseUrlOptions(r *http.Request) (*UrlOptions, error) {
 					options.encoding = OUTPUT_ENCODING_BASE64
 				} else if v == "json" {
 					options.encoding = OUTPUT_ENCODING_JSON
+				} else if v == "html" {
+					options.html = true
 				} else if v == "delete" {
 					options.remove = true
 				} else if v == "showvalue" {

@@ -29,8 +29,8 @@ package main
 
 import (
 	"fmt"
-	"strings"
 	"regexp"
+	"strings"
 )
 
 const (
@@ -43,8 +43,23 @@ type KeyInfo struct {
 	name []byte
 }
 
+func (k *KeyInfo) Byte(encoding int, html bool) []byte {
+	var key string
+	if encoding == OUTPUT_ENCODING_BINARY {
+		key = k.path
+	} else {
+		key = urlencode(string(k.path))
+	}
+
+	if html == true {
+		key = fmt.Sprintf("<a href=\"%s\">%s</a><br>", urlencode(string(k.path)), key)
+	}
+
+	return []byte(key)
+}
+
 func (k *KeyInfo) IsVersion() bool {
-	matched, err := regexp.MatchString(".+" + VERSIONING_DELIMITER + "[0-9]{19}$", k.path)
+	matched, err := regexp.MatchString(".+"+VERSIONING_DELIMITER+"[0-9]{19}$", k.path)
 	if err != nil {
 		return false
 	}

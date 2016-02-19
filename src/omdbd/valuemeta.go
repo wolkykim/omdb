@@ -37,6 +37,7 @@ import (
 )
 
 const (
+	VALUEMETA_VERSION = 1
 	VM_FLAG_ENVELOPE_VERSION = (0x01)    // version of serialized data format
 	VM_FLAG_VERSIONNED       = (1 << 15) // indicate versioned data
 )
@@ -44,7 +45,7 @@ const (
 type ValueMeta struct {
 	flag   uint16 // first 4 bits are used for format numbering.
 	Key    string `json:"k,omitempty"`
-	Value  []byte `json:"v"`
+	Value  []byte `json:"v,omitempty"`
 	Ts     int64  `json:"ts,omitempty"`
 	Expire int32  `json:"expire,omitempty"`
 }
@@ -76,7 +77,7 @@ func (m *ValueMeta) Byte(encoding int, k string) []byte {
 		return encoded
 	} else if encoding == OUTPUT_ENCODING_JSON {
 		m.Key = k
-		b, err := json.Marshal(m)
+		b, err := json.MarshalIndent(m, "", "\t")
 		if err != nil {
 			return []byte("{\"error\":\"" + err.Error() + "\"")
 		}

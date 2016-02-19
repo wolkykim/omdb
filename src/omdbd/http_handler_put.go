@@ -45,7 +45,7 @@ func doPut(w http.ResponseWriter, r *http.Request, k *KeyInfo, v []byte, o *UrlO
 	vm := NewValue(v)
 
 	// Handle versioning
-	if conf.Default.Versioning == true {
+	if conf.Global.Versioning == true {
 		vk, _ := genVersionKeyInfo(k, vm.Ts)
 
 		vm.flag = vm.flag | VM_FLAG_VERSIONNED

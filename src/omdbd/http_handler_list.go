@@ -36,6 +36,11 @@ import (
 	"time"
 )
 
+const (
+	HTTP_HEADER_X_TRUNCATED = "X-Omdb-Truncated"
+	HTTP_HEADER_X_NEXT      = "X-Omdb-Next"
+)
+
 func doList(w http.ResponseWriter, r *http.Request, k *KeyInfo, o *UrlOptions) (int, string) {
 	g_info.IncreaseCounter("http.list")
 	timer := time.Now()
@@ -99,7 +104,7 @@ func doList(w http.ResponseWriter, r *http.Request, k *KeyInfo, o *UrlOptions) (
 			}
 			vms = append(vms, *vm)
 		} else {
-			b.Write(encodeKey(o.encoding, []byte(key.path)))
+			b.Write(key.Byte(o.encoding, o.html))
 			if o.showvalue {
 				vm, err := DecodeValue(it.Value())
 				if err != nil {
