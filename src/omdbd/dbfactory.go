@@ -57,7 +57,7 @@ func newDbFactory(config *Config) (*DbFactory, error) {
 		ro:      leveldb.NewReadOptions(),
 		wo:      leveldb.NewWriteOptions(),
 	}
-	g_debug.Printf("leveldb library version: %d.%d\n", leveldb.GetLevelDBMajorVersion(), leveldb.GetLevelDBMinorVersion())
+	//g_debug.Printf("leveldb version: %d.%d\n", leveldb.GetLevelDBMajorVersion(), leveldb.GetLevelDBMinorVersion())
 
 	return dbfactory, nil
 }

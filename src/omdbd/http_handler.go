@@ -94,8 +94,6 @@ func doPut(w http.ResponseWriter, r *http.Request, k *KeyInfo, v []byte, o *UrlO
 		return http.StatusBadRequest, "Key name is empty."
 	}
 
-	g_debug.Println(r, v)
-
 	// Encode
 	vm := NewValue(v)
 	vb, err := vm.Encode()
