@@ -34,11 +34,11 @@ type Config struct {
 		ErrorLog string
 	}
 	Default struct {
-		StatusUrl string
-		OutputEncoding int
+		QueryOption  string // default query option.
+		Versioning   bool
 		MaxKeySize   int
 		MaxValueSize int
-		ListSize     int // maximum number of keys to send on list request
+		StatusUrl    string
 	}
 	Database struct {
 		Directory  string

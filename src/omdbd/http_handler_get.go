@@ -25,55 +25,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
-
 package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"net/url"
-	"os"
-	"strings"
+	"time"
 )
 
-func getHttpBody(r *http.Request) []byte {
-	if r.ContentLength == 0 {
-		return nil
-	}
+func doGet(w http.ResponseWriter, r *http.Request, k *KeyInfo, o *UrlOptions) (int, string) {
+	g_info.IncreaseCounter("http.get")
+	timer := time.Now()
 
-	body, err := ioutil.ReadAll(r.Body)
+	v, err := dbf.Get(k)
 	if err != nil {
-		return nil
+		return http.StatusInternalServerError, err.Error()
+	}
+	if v == nil {
+		return http.StatusNotFound, "No such key found."
 	}
 
-	return body
-}
-
-func urlencode(s string) string {
-	return strings.Replace(url.QueryEscape(s), "%2F", "/", -1)
-}
-
-func encodeKey(encoding int, k []byte) []byte {
-	if encoding == OUTPUT_ENCODING_BINARY {
-		return k
-	} else {
-		return []byte(urlencode(string(k)))
-	}
-}
-
-func createPidfile(pidpath string, pid int) error {
-	fp, err := os.OpenFile(pidpath, os.O_EXCL|os.O_CREATE|os.O_WRONLY, 0644)
+	var vm *ValueMeta
+	vm, err = DecodeValue(v)
 	if err != nil {
-		return err
+		return http.StatusInternalServerError, err.Error()
 	}
-	defer fp.Close()
-	if _, err = fmt.Fprint(fp, pid); err != nil {
-		return err
-	}
-	return nil
-}
 
-func removePidfile(pidpath string) error {
-	return os.Remove(pidpath)
+	w.Write(vm.Byte(o.encoding, k.path))
+	return http.StatusOK, fmt.Sprint("runtime:", time.Since(timer))
 }

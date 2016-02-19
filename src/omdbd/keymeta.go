@@ -25,55 +25,56 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
-
 package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"os"
 	"strings"
+	"regexp"
 )
 
-func getHttpBody(r *http.Request) []byte {
-	if r.ContentLength == 0 {
-		return nil
-	}
+const (
+	VERSIONING_DELIMITER = "#V"
+)
 
-	body, err := ioutil.ReadAll(r.Body)
+type KeyInfo struct {
+	path string
+	db   string
+	name []byte
+}
+
+func (k *KeyInfo) IsVersion() bool {
+	matched, err := regexp.MatchString(".+" + VERSIONING_DELIMITER + "[0-9]{19}$", k.path)
 	if err != nil {
-		return nil
+		return false
 	}
-
-	return body
+	return matched
 }
 
-func urlencode(s string) string {
-	return strings.Replace(url.QueryEscape(s), "%2F", "/", -1)
+func parseKeyInfo(urlpath string) (*KeyInfo, error) {
+	path := strings.TrimSpace(urlpath)
+	tokens := strings.SplitN(path, "/", 3)
+	if len(tokens) != 3 {
+		return nil, fmt.Errorf("Invalid urlpath. %s", urlpath)
+	}
+
+	name := tokens[2]
+	if len(name) == 0 {
+		name = "/"
+	}
+
+	return &KeyInfo{
+		path: path,
+		db:   tokens[1],
+		name: []byte(name),
+	}, nil
 }
 
-func encodeKey(encoding int, k []byte) []byte {
-	if encoding == OUTPUT_ENCODING_BINARY {
-		return k
-	} else {
-		return []byte(urlencode(string(k)))
-	}
+func genKeyPath(db string, name string) string {
+	return "/" + db + "/" + name
 }
 
-func createPidfile(pidpath string, pid int) error {
-	fp, err := os.OpenFile(pidpath, os.O_EXCL|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
-	defer fp.Close()
-	if _, err = fmt.Fprint(fp, pid); err != nil {
-		return err
-	}
-	return nil
-}
-
-func removePidfile(pidpath string) error {
-	return os.Remove(pidpath)
+func genVersionKeyInfo(k *KeyInfo, ts int64) (*KeyInfo, error) {
+	verno := MAX_INT64 - ts
+	return parseKeyInfo(genKeyPath(k.db, fmt.Sprintf("%s%s%019d", string(k.name), VERSIONING_DELIMITER, verno)))
 }

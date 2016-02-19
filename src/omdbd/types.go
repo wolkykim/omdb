@@ -28,8 +28,3 @@
 
 package main
 
-type KeyInfo struct {
-	path string
-	db   string
-	name []byte
-}

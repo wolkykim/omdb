@@ -25,55 +25,47 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
-
 package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"net/url"
-	"os"
-	"strings"
+	"time"
 )
 
-func getHttpBody(r *http.Request) []byte {
-	if r.ContentLength == 0 {
-		return nil
+func doPut(w http.ResponseWriter, r *http.Request, k *KeyInfo, v []byte, o *UrlOptions) (int, string) {
+	g_info.IncreaseCounter("http.put")
+	timer := time.Now()
+
+	if len(k.name) == 0 {
+		return http.StatusBadRequest, "Key name is empty."
 	}
 
-	body, err := ioutil.ReadAll(r.Body)
+	// Encode
+	vm := NewValue(v)
+
+	// Handle versioning
+	if conf.Default.Versioning == true {
+		vk, _ := genVersionKeyInfo(k, vm.Ts)
+
+		vm.flag = vm.flag | VM_FLAG_VERSIONNED
+		vb, err := vm.Encode()
+		if err != nil {
+			return http.StatusInternalServerError, err.Error()
+		}
+		vm.flag = vm.flag ^ VM_FLAG_VERSIONNED
+		if err := dbf.Put(vk, vb); err != nil {
+			return http.StatusInternalServerError, err.Error()
+		}
+	}
+
+	vb, err := vm.Encode()
 	if err != nil {
-		return nil
+		return http.StatusInternalServerError, err.Error()
+	}
+	if err := dbf.Put(k, vb); err != nil {
+		return http.StatusInternalServerError, err.Error()
 	}
 
-	return body
-}
-
-func urlencode(s string) string {
-	return strings.Replace(url.QueryEscape(s), "%2F", "/", -1)
-}
-
-func encodeKey(encoding int, k []byte) []byte {
-	if encoding == OUTPUT_ENCODING_BINARY {
-		return k
-	} else {
-		return []byte(urlencode(string(k)))
-	}
-}
-
-func createPidfile(pidpath string, pid int) error {
-	fp, err := os.OpenFile(pidpath, os.O_EXCL|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
-	defer fp.Close()
-	if _, err = fmt.Fprint(fp, pid); err != nil {
-		return err
-	}
-	return nil
-}
-
-func removePidfile(pidpath string) error {
-	return os.Remove(pidpath)
+	return http.StatusOK, fmt.Sprint("runtime:", time.Since(timer))
 }

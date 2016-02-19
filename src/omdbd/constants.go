@@ -44,4 +44,6 @@ const (
 
 	HTTP_HEADER_X_TRUNCATED = "X-Omdb-Truncated"
 	HTTP_HEADER_X_NEXT      = "X-Omdb-Next"
+	
+	MAX_INT64 = 9223372036854775807
 )

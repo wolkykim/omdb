@@ -32,8 +32,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"omdbd/rotatelogger"
 	"net/http"
+	"omdbd/rotatelogger"
 	"os"
 	"os/signal"
 	"syscall"
@@ -88,7 +88,6 @@ func validator(h handler) handler {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// TODO: implement request validation code.
 		var valid = true // bypass for now
-
 		if valid == true {
 			h(w, r)
 			return
@@ -117,7 +116,9 @@ func superHandler(h reqhandler) handler {
 		if (status / 100) != 2 {
 			http.Error(w, message, status)
 		}
+
 		accesslog.Printf("%s \"%s %s\" %d \"%s\"\n", r.RemoteAddr, r.Method, r.RequestURI, status, message)
+		g_info.IncreaseCounter(fmt.Sprintf("http.rescode.%d", status))
 	}
 }
 
