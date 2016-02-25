@@ -69,7 +69,8 @@ $ curl http://localhost:8081/testdb/test.txt --data "o=json"
 
 ## Key Listing and Search
 
-When given key has tailing slash, it lists keys from the given key or very next key if no match found.
+When given key has tailing slash, it lists keys starting from the given key or the very next key if no matching key found.
+Keys are listed in sorted manner.
 
 ```
 $ curl http://localhost:8081/testdb/                                       
