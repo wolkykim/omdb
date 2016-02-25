@@ -8,16 +8,20 @@ About OmDB
 * Versioning (Yeah~)
 * Written in Go lang with leveldb storage backend.
 
-How to Build
-============
+Build & Install
+===============
 ```
 $ git clone https://github.com/wolkykim/omdb.git
 $ cd omdb
-$ source env.sh
-$ make updatepkg
-$ sudo make install-leveldb-lib
+$ make build-deps
+$ sudo make install-deps
 $ make
-$ src/omdbd/omdbd -c etc/omdbd.conf -d
+
+$ sudo make install
+$ cd /usr/local/omdb;
+$ sudo chown RUN_USER:RUN_GROUP db logs
+$ sudo cp etc/omdbd.conf.example etc/omdbd.conf
+$ bin/omdbd -c etc/omdbd.conf -d
 ```
 
 APIs
