@@ -1,6 +1,3 @@
-IN-PROGRESS OF DEVELOPMENT
-==========================
-
 About OmDB
 ==========
 
