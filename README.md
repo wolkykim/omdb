@@ -120,7 +120,7 @@ $ curl http://localhost:8081/testdb/notes/tod/ --data "o=showvalue,url,filter:.*
 
 'maxscan' options can be used to limit internal scan range. This is useful to control the load when filter option is given and there are lesser number of matching keys thax 'max' size, it'll limit number of key iteration to 'maxscan' size otherwise it'll continue the scan till the end.
 
-### Limiting list size - 'max' options
+### Limiting list size - 'max' option
 
 'max' option specifies the number of keys in the return. If there are more keys that this, it will attach 'X-Omdb-Truncated' and 'X-Omdb-Next' headers for next iteration. By default, it's set to 1000.
 
