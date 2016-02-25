@@ -84,7 +84,7 @@ $ curl http://localhost:8081/testdb/notes/tod/
 /testdb/test.txt
 ```
 
-### Option 'showvalue'
+### Show values - 'showvalue' option
 
 ```
 $ curl http://localhost:8081/testdb/notes/tod/ --data "o=showvalue,url"
@@ -108,7 +108,7 @@ $ curl http://localhost:8081/testdb/notes/tod/ --data "o=showvalue,json"
 ]
 ```
 
-### Search - 'filter' and 'maxscan' options.
+### Search - 'filter' and 'maxscan' options
 
 ```
 $ curl http://localhost:8081/testdb/notes/tod/ --data "o=showvalue,url,filter:.*no.*"
@@ -117,7 +117,7 @@ $ curl http://localhost:8081/testdb/notes/tod/ --data "o=showvalue,url,filter:.*
 
 'maxscan' options can be used to limit internal scan range. This is useful to control the load when filter option is given and there are lesser number of matching keys thax 'max' size, it'll limit number of key iteration to 'maxscan' size otherwise it'll continue the scan till the end.
 
-### Limiting list size - 'max' options.
+### Limiting list size - 'max' options
 
 'max' option specifies the number of keys in the return. If there are more keys that this, it will attach 'X-Omdb-Truncated' and 'X-Omdb-Next' headers for next iteration. By default, it's set to 1000.
 
@@ -180,7 +180,7 @@ $ curl http://localhost:8081/testdb/ --data "o=max:2"
 $ curl http://localhost:8081/testdb/ --data "o=max:2,delete"
 ```
 
-## Internal Status Page
+## Internal status page
 
 ```
 $ curl http://localhost:8081/status                              
@@ -217,8 +217,8 @@ Option format is "o=option,option:val,..."
   * max:N - limit maximum number of keys to list.
   * maxscan:N - limit maximum number of keys to scan.
 
-Configuration
-=============
+Default Configuration
+=====================
 ```
 [global]
 PidFile = /var/tmp/omdbd.pid
