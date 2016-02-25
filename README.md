@@ -69,7 +69,7 @@ $ curl http://localhost:8081/testdb/test.txt --data "o=json"
 Try 'html' option when working with web browsers.
 ```
 
-## Key Listing and Search
+## Key Listing and Regular-expression Search
 
 When given key has tailing slash, it lists keys starting from the given key or the very next key if no matching key found.
 Keys are listed in sorted manner.
