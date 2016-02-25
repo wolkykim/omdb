@@ -1,18 +1,15 @@
 IN-PROGRESS OF DEVELOPMENT
 ==========================
 
-OmDB (OhMyDB)
-=============
+About OmDB
+==========
 
-OmDB is a persistent key/value store. OmDB uses LevelDB as backend storre and provide REST APIs.
-
-* OmDB is simple as single binary executable is all you need to install.
-* OmDB doesn't require special client but standard HTTP(HTTPS) protocol.
-* OmDB can be accessed using only curl and OmDB is shell program friendly.
-* OmDB provides sorted key listing and key search.
-* OmDB provides iteration over lists.
-* OmDB provides data versioning.
-
+* Persistent Key/Value Store.
+* Simple in distribution – One binary executable.
+* No special client but just any HTTP/HTTPS clients, even web browsers..
+* Sorted Key Listing and Iteration.
+* Versioning (Yeah~)
+* Written in Go lang with leveldb storage backend.
 
 How to Build
 ============
@@ -29,203 +26,179 @@ $ src/omdbd/omdbd -c etc/omdbd.conf -d
 APIs
 ====
 
+## Key Insertion & Retrieval
 
-## LIST API
-
-DEMO: http://omdb.theaddr.com:8081/test/
+OmDB takes PUT, GET and POST methods for key insertion as below.
 
 List all keys in sorted order that are prefixed by a given key or within the given range.
 ```
-GET /db/key/ HTTP/1.1
+$ cat test.txt
+Hello World!
+This is OmDB
 
-200 OK
-Content-Type: text/plain
-Content-Length: 100
-x-key: key
-x-size: 3
-x-format: text
-x-encoding: url
-x-delimiter: (Not shown if not specified in the request)
-x-keyfilter: (Not shown if not specified in the request)
-x-rangekey: (Now shown if not specified in the request)
-x-iterator: (Not shown if no iteration is required)
+$ curl http://localhost:8081/testdb/test.txt -T test.txt
 
-keyA=value
-keyB=value
-keyC=value
+$ curl http://localhost:8081/testdb/test.txt
+Hello World!
+This is OmDB
 ```
 
-For the next iteration. (Also can be given as an option)
-```
-GET /db/key/#iterator HTTP/1.1
-```
+Here's another way of insertion.
 
-Options can be given in 2 ways
 ```
-GET /db/key/?option1=value&option2=value&... HTTP/1.1
-
-Or
-
-GET /db/key/ HTTP/1.1
-x-options: option1=value,option2=value,...
+$ curl http://localhost:8081/testdb/memo --data "v=I'm still hungry."
+$ curl http://localhost:8081/testdb/memo                             
+I'm still hungry.
 ```
 
-List of Options
-* maxkey : Maximum number of keys (default: 1000)
-* format : text | html | xml | json (default: text)
-* keyonly : true | false (default false)
-* encoding : url | hex | base64 (default: url)
-* rangekey : last key for range request (if given perform until the specified key range, if not given perform prefix listing)
-* delimiter : character for the boundary (ex: "/")
-* keyfilter : regular expression to filter keys.
-* iterator : Used for iteration
+### Output enncodings
 
-Response Codes
-* 200 : Ok.
-* 400 : Bad request.
-* 500 : Internal server error
+It supports url, base64 and json encodings.
 
-Response Headers
-* Content-Type
-* Content-Length
-* x-key
-* x-size
-* x-format
-* x-encoding
-* x-iterator: Will be set if list is truncated by maxkey.
-
-
-## GET API
-
-DEMO: http://omdb.theaddr.com:8081/test/hello
-
-Get the value of a key.
 ```
-GET /db/key HTTP/1.1
+$ curl http://localhost:8081/testdb/test.txt --data "o=url"
+Hello+World%21%0AThis+is+OmDB%0A
 
-200 OK
-Content-Type: application/octet-stream
-Content-Length: 32
-x-key: /db/key
-x-encoding: raw
+$ curl http://localhost:8081/testdb/test.txt --data "o=base64"
+SGVsbG8gV29ybGQhClRoaXMgaXMgT21EQgo=
 
-(raw data)
+$ curl http://localhost:8081/testdb/test.txt --data "o=json"
+{
+	"k": "/testdb/test.txt",
+	"v": "SGVsbG8gV29ybGQhClRoaXMgaXMgT21EQgo=",
+	"ts": 1456371872563194746
+}
 ```
 
-List of Options
-* encoding : raw | url | hex | base64 | gzip (default: raw)
-* contenttype : override default content-type to user defined (default: application/octet-stream for 'raw' and 'gzip' incoding, plain/text for other 'encoding')
+## Key Listing and Search
 
-Response Codes
-* 200 : Ok.
-* 400 : Bad request.
-* 404 : Key not found.
-* 500 : Internal server error
+When given key has tailing slash, it lists keys from the given key or very next key if no match found.
 
-Response Headers
-* Content-Type
-* Content-Length
-* x-key
-* x-options
-
-
-## PUT API
-
-DEMO: http://omdb.theaddr.com:8081/test/testkey?v=test_value
-
-Put a key
 ```
-PUT /db/key HTTP/1.1
-Content-Length: 32
+$ curl http://localhost:8081/testdb/                                       
+/testdb/memo
+/testdb/mypic
+/testdb/notes/tobuy
+/testdb/notes/todo
+/testdb/test.txt
 
-(raw data)
-
-204 OK
-Content-Length: 32
-x-key: /db/key
+$ curl http://localhost:8081/testdb/notes/tod/
+/testdb/notes/todo
+/testdb/test.txt
 ```
 
-List of Options
-* encoding : raw | gzip (default: raw)
+### Option 'showvalue'
 
-Response Codes
-* 204 : Successfully stored.
-* 400 : Bad request.
-* 404 : Key not found.
-* 500 : Internal server error
-
-Response Headers
-* Content-Length
-* x-key
-
-## DELETE API
-
-Delete a key
 ```
-DELETE /db/key HTTP/1.1
+$ curl http://localhost:8081/testdb/notes/tod/ --data "o=showvalue,url"
+/testdb/notes/todo=I%27m+still+hungry.
+/testdb/test.txt=Hello+World%21%0AThis+is+OmDB%0A
 
-204 OK
-Content-Length: 32
-x-key: /db/key
-```
+In Json encoding, the values get Base64 encoded.
 
-Delete all keys starting with key prefix.
-```
-DELETE /db/key_prefix/ HTTP/1.1
-
-200 OK
-Content-Length: 32
-x-key: /db/key_prefix
-x-size: 3
-x-encoding: url
-x-iterator:
-
-200 /db/key_prefix_A
-200 /db/key_prefix_B
-500 /db/key_prefix_C
+$ curl http://localhost:8081/testdb/notes/tod/ --data "o=showvalue,json"
+[
+	{
+		"k": "/testdb/notes/todo",
+		"v": "SSdtIHN0aWxsIGh1bmdyeS4=",
+		"ts": 1456372221395798559
+	},
+	{
+		"k": "/testdb/test.txt",
+		"v": "SGVsbG8gV29ybGQhClRoaXMgaXMgT21EQgo=",
+		"ts": 1456371872563194746
+	}
+]
 ```
 
-Delete multiple keys.
+### Search - 'filter' and 'maxscan' options.
+
 ```
-DELETE / HTTP/1.1
-x-key: /db/key_A
-x-key: /db/key_B, /db/key_C
-
-200 OK
-Content-Length: 32
-x-key: /
-x-size: 3
-x-encoding: url
-x-iterator:
-
-200 /db/key_A
-404 /db/key_B
-200 /db/key_C
+$ curl http://localhost:8081/testdb/notes/tod/ --data "o=showvalue,url,filter:.*no.*"
+/testdb/notes/todo=I%27m+still+hungry.
 ```
 
+'maxscan' options can be used to limit internal scan range. This is useful to control the load when filter option is given and there are lesser number of matching keys thax 'max' size, it'll limit number of key iteration to 'maxscan' size otherwise it'll continue the scan till the end.
 
-List of Options
-* maxkey : Maximum number of keys to delete (default: 1000)
-* format : text | html | xml | json (default: text)
-* encoding url | hex | base64 (default: url)
-* iterator : Used for iteration
+### Limiting list size - 'max' options.
 
-Response Codes
-* 200 or 204 : Successfully deleted.
-* 400 : Bad request.
-* 404 : Key not found.
-* 500 : Internal server error
+'max' option specifies the number of keys in the return. If there are more keys that this, it will attach 'X-Omdb-Truncated' and 'X-Omdb-Next' headers for next iteration. By default, it's set to 1000.
 
-Response Headers
-* Content-Length
-* x-key
+```
+$ curl http://localhost:8081/testdb/ --data "o=max:2"
+(Response Header) X-Omdb-Truncated: 1
+(Response Header) X-Omdb-Next: /testdb/mypic%23V7766999835404987155/
+/testdb/memo
+/testdb/mypic
+
+$ curl http://localhost:8081/testdb/mypic%23V7766999835404987155/ --data "o=max:2"
+(Response Header) X-Omdb-Next: /testdb/notes/todo%23V7766999815458977248/
+(Response Header) X-Omdb-Truncated: 1
+/testdb/notes/tobuy
+/testdb/notes/todo
+
+$ curl http://localhost:8081/testdb/notes/todo%23V7766999815458977248/ --data "o=max:2"   
+/testdb/test.txt
+```
+
+## Versioning
+
+```
+$ curl http://localhost:8081/testdb/test.txt/ --data "o=max:1"
+/testdb/test.txt
+
+$ curl http://localhost:8081/testdb/test.txt/ --data "o=max:3,showversion,json"
+[
+	{
+		"k": "/testdb/test.txt",
+		"ts": 1456373530935729691
+	},
+	{
+		"k": "/testdb/test.txt#V7766998505919046116",
+		"ts": 1456373530935729691
+	},
+	{
+		"k": "/testdb/test.txt#V7767000164291581061",
+		"ts": 1456371872563194746
+	}
+]
+
+$ curl http://localhost:8081/testdb/test.txt#V7766998505919046116
+hello~
+```
+'#V(19 digit rev number)' is a special key postfix. As you see rev number decreases while timestamp(ts) increases. So lastest revision always located on the top right below to the key and the oldest one gets located on the bottom in the list.
+
+## Internal Status
+
+```
+$ curl http://localhost:8081/status                              
+PRGNAME : omdbd
+STARTED : 2016-02-24T19:44:00-08:00
+VERSION : 1.0.0
+db.get : 11
+db.iterator : 34
+db.open : 1
+db.put : 12
+http.get : 11
+http.list : 36
+http.put : 6
+http.rescode.200 : 48
+http.rescode.400 : 3
+http.rescode.404 : 3
+http.status : 1
+```
 
 Configuration
 =============
 ```
 [global]
 PidFile = /var/tmp/omdbd.pid
-ErrorLog = /usr/local/omdbd/logs/error.log
+ErrorLog = /usr/local/omdb/logs/error.log
+Versioning = true
+MaxKeySize = 255
+MaxValueSize = 0
+StatusUrl = /status
+QueryOption = binary,max:1000,maxscan:100000
 
 [database]
 Directory = /usr/local/omdb/db
@@ -239,10 +212,4 @@ CertFile =              # certificate file for https protocol
 KeyFile =               # private key file for https protocol
 AccessLog = /usr/local/omdb/logs/access-20060102150405.log
 LogRotate = 3600
-#StatusUrl = /status
-
-[limit]
-MaxKeySize = 255
-MaxValueSize = 0
-ListSize = 1000
 ```
