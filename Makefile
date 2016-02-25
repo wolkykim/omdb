@@ -26,39 +26,41 @@
 ## POSSIBILITY OF SUCH DAMAGE.
 ################################################################################
 
-.PHONY: all build install clean rpm
+.PHONY: all build install clean package rpm
 D=$(shell pwd)/rpm-build
 O=--define "_topdir $(D)"
+PREFIX=/usr/local/omdb
 
-TARGETS = src/omdbd
+TARGETS=src/omdbd
 
 all: build
 
-updatepkg:
-	@./update_pkg.sh
+build-deps:
+	@./update_pkg.sh setup
 
-install-leveldb-lib:
-	cp src/leveldb/libleveldb.* /usr/lib/	
+install-deps:
+	@./update_pkg.sh install
 
-build:
+build: build-deps
 	@for TARGET in ${TARGETS}; do				\
-		(cd $${TARGET}; make);				\
+		(export GOPATH="$${PWD}"; cd $${TARGET}; make);	\
 	done
 
-install: build
-	export GOPATH="$${PWD}"
-	@for TARGET in ${TARGETS}; do				\
-		(cd $${TARGET}; make clean install);		\
-	done
+install: build install-deps
+	@mkdir -p ${PREFIX}
+	@mkdir -p ${PREFIX}/bin
+	@mkdir -p ${PREFIX}/db
+	@mkdir -p ${PREFIX}/etc
+	@mkdir -p ${PREFIX}/logs
+	@cp -fv src/omdbd/omdbd ${PREFIX}/bin/
+	@cp -fv etc/omdbd.conf.example ${PREFIX}/etc/
 
 clean:
+	@./update_pkg.sh clean
 	@for TARGET in ${TARGETS}; do				\
 		(cd $${TARGET}; make clean);			\
 	done
-	rm -rf $(D)
 
 package: rpm
-rpm:	clean install
-	mkdir $(D)
-	ls
+rpm:	clean build
 	rpmbuild -bb --noclean $(O) rpm.spec
