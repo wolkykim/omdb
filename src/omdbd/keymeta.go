@@ -52,7 +52,7 @@ func (k *KeyInfo) Byte(encoding int, html bool) []byte {
 	}
 
 	if html == true {
-		key = fmt.Sprintf("<a href=\"%s\">%s</a><br>", urlencode(string(k.path)), key)
+		key = fmt.Sprintf("<p><a href=\"%s\">%s</a>", urlencode(string(k.path)), key)
 	}
 
 	return []byte(key)
