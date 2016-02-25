@@ -140,6 +140,8 @@ $ curl http://localhost:8081/testdb/notes/todo%23V7766999815458977248/ --data "o
 
 ## Versioning
 
+Versioning is a configurable optional feature.
+
 ```
 $ curl http://localhost:8081/testdb/test.txt/ --data "o=max:1"
 /testdb/test.txt
@@ -165,7 +167,20 @@ hello~
 ```
 '#V(19 digit rev number)' is a special key postfix. As you see rev number decreases while timestamp(ts) increases. So lastest revision always located on the top right below to the key and the oldest one gets located on the bottom in the list.
 
-## Internal Status
+## Deletion
+
+```
+$ curl http://localhost:8081/testdb/test.txt --data "o=delete"
+$ curl http://localhost:8081/testdb/test.txt                  
+No such key found.
+
+$ curl http://localhost:8081/testdb/ --data "o=max:2"
+/testdb/notes/tobuy
+/testdb/notes/todo
+$ curl http://localhost:8081/testdb/ --data "o=max:2,delete"
+```
+
+## Internal Status Page
 
 ```
 $ curl http://localhost:8081/status                              
@@ -184,6 +199,23 @@ http.rescode.400 : 3
 http.rescode.404 : 3
 http.status : 1
 ```
+
+## Available options
+
+Option format is "o=option,option:val,..."
+
+* binary - no encoding
+* url - encode value with url encoding
+* base64 - encode value with base74 encoding. keys are url-encoded.
+* json - json format output with values based64-encoded. keys are string.
+* delete - delete matching key(s)
+* List specific options.
+  * showvalue - show values with keys.
+  * showversion - show version keys.
+  * html - add html anchor to keys for web browser operation.
+  * filter:REGEXP - match keys with given regular expression.
+  * max:N - limit maximum number of keys to list.
+  * maxscan:N - limit maximum number of keys to scan.
 
 Configuration
 =============
