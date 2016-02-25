@@ -224,6 +224,12 @@ Option format is "o=option,option:val,..."
   * max:N - limit maximum number of keys to list.
   * maxscan:N - limit maximum number of keys to scan.
 
+Demo & Playground
+=================
+Here's a demo service. Freel free to play with it.
+
+* http://omdb.theaddr.com:8081/testdb/
+
 Default Configuration
 =====================
 ```
