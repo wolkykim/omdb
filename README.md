@@ -18,7 +18,7 @@ $ sudo make install-deps
 $ make
 
 $ sudo make install
-$ cd /usr/local/omdb;
+$ cd /usr/local/omdb
 $ sudo chown RUN_USER:RUN_GROUP db logs
 $ sudo cp etc/omdbd.conf.example etc/omdbd.conf
 $ bin/omdbd -c etc/omdbd.conf -d
