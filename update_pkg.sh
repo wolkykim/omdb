@@ -48,7 +48,7 @@ do_uninstall() {
 }
 
 do_clean() {
-	CLEAN_DIRS="src/github.com src/gopkg.in src/leveldb"
+	CLEAN_DIRS="pkg src/github.com src/gopkg.in src/leveldb"
 	for DIR in $CLEAN_DIRS; do
 		[[ -d $DIR ]] && echo "Removing $DIR... " && rm -rf $DIR
 	done
