@@ -48,7 +48,7 @@ $ curl http://localhost:8081/testdb/memo
 I'm still hungry.
 ```
 
-### Output enncodings
+### Output encodings
 
 It supports url, base64 and json encodings.
 
@@ -65,6 +65,8 @@ $ curl http://localhost:8081/testdb/test.txt --data "o=json"
 	"v": "SGVsbG8gV29ybGQhClRoaXMgaXMgT21EQgo=",
 	"ts": 1456371872563194746
 }
+
+Try 'html' option when working with web browsers.
 ```
 
 ## Key Listing and Search
