@@ -46,6 +46,9 @@ func doList(w http.ResponseWriter, r *http.Request, k *KeyInfo, o *UrlOptions) (
 	timer := time.Now()
 
 	it := dbf.NewIterator(k.db)
+	if it == nil {
+		return http.StatusNotFound, "No such key found."
+	}
 	defer it.Close()
 
 	start := string(k.name)
