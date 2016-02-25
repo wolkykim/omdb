@@ -24,6 +24,12 @@ $ sudo cp etc/omdbd.conf.example etc/omdbd.conf
 $ bin/omdbd -c etc/omdbd.conf -d
 ```
 
+Demo & Playground
+=================
+Here's a demo service. Freel free to play with it.
+
+* http://omdb.theaddr.com:8081/testdb/
+
 APIs
 ====
 
@@ -223,12 +229,6 @@ Option format is "o=option,option:val,..."
   * filter:REGEXP - match keys with given regular expression.
   * max:N - limit maximum number of keys to list.
   * maxscan:N - limit maximum number of keys to scan.
-
-Demo & Playground
-=================
-Here's a demo service. Freel free to play with it.
-
-* http://omdb.theaddr.com:8081/testdb/
 
 Default Configuration
 =====================
