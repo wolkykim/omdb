@@ -267,7 +267,7 @@ OmScaler is a partner program that makes larger OmDB cluster with multiple OmDB 
 * Provides data availability by data replication,
 * Provides Quorum-based data integrity.
 
-=== OmScaler's VS. Cassandra's Consistent-Hash model
+### OmScaler's VS. Cassandra's Consistent-Hash model
 
 The problems of Consistent-Hash based NoSQL like Cassandra.
 * It doens't scale well due to the nature of required re-balancing when number of nodes changes. In large scale, server always dies.
