@@ -22,8 +22,9 @@ do_setup() {
 	cd src
 	[[ ! -d leveldb ]] && git clone https://github.com/google/leveldb.git && (cd leveldb; git checkout v1.18; make)
 	cd ../
+	[[ ! -f /usr/lib64/libleveldb.so ]] && [[ ! -f /usr/lib/libleveldb.so ]] && echo "Need to install dependent libraries first." && echo "Run 'sudo make install-deps' then re-run this." && exit 1
 
-	. env.sh
+	source env.sh
 	for PACKAGE in $PACKAGES; do
 		[[ -d src/$PACKAGE ]] && continue
 		echo -n "Getting $PACKAGE... "
@@ -34,14 +35,14 @@ do_setup() {
 
 do_install() {
 	[[ -f /usr/lib64/libleveldb.so ]] || [[ -f /usr/lib/libleveldb.so ]] && echo "leveldb already installed." && return
-	[[ $UID != 0 ]] && echo "must be root permission to install" && return
+	[[ $UID != 0 ]] && echo "must be root permission to install" && exit 1
 	for DIR in /usr/lib64 /usr/lib; do
 		[[ -d $DIR ]] && echo "Installing leveldb into $DIR/" && cp -v src/leveldb/libleveldb.* $DIR/ && break
 	done
 }
 
 do_uninstall() {
-	[[ $UID != 0 ]] && echo "must be root permission to remove" && return
+	[[ $UID != 0 ]] && echo "must be root permission to remove" && exit 1
 	for DIR in /usr/lib64 /usr/lib; do
 		[[ -f $DIR/libleveldb.so ]] && echo "Removing leveldb from $DIR/" && rm -v $DIR/libleveldb.*
 	done

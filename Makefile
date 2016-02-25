@@ -41,6 +41,9 @@ build-deps:
 install-deps:
 	@./update_pkg.sh install
 
+uninstall-deps:
+	@./update_pkg.sh uninstall
+
 build: build-deps
 	@for TARGET in ${TARGETS}; do				\
 		(export GOPATH="$${PWD}"; cd $${TARGET}; make);	\
