@@ -31,7 +31,7 @@ package main
 const (
 	PRGNAME  = "omdbd"
 	LONGDESC = "OmDB daemon"
-	VERSION  = "1.0.1"
+	VERSION  = "1.0.0b2"
 
 	DEFAULT_CONFIG_FILEPATH = "/usr/local/omdb/etc/omdbd.conf"
 
