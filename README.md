@@ -230,32 +230,6 @@ Option format is "o=option,option:val,..."
   * max:N - limit maximum number of keys to list.
   * maxscan:N - limit maximum number of keys to scan.
 
-Default Configuration
-=====================
-```
-[global]
-PidFile = /var/tmp/omdbd.pid
-ErrorLog = /usr/local/omdb/logs/error.log
-Versioning = true
-MaxKeySize = 255
-MaxValueSize = 0
-StatusUrl = /status
-QueryOption = binary,max:1000,maxscan:100000
-
-[database]
-Directory = /usr/local/omdb/db
-AutoCreate = true # whether to create database automatically
-CacheSize = 10000
-
-[httplistener]
-Addr = 0.0.0.0:8081     # listen address in "address:port" format
-Protocol = http         # http or https
-CertFile =              # certificate file for https protocol
-KeyFile =               # private key file for https protocol
-AccessLog = /usr/local/omdb/logs/access-20060102150405.log
-LogRotate = 3600
-```
-
 OmScaler - Larger OmDB Cluster
 ==============================
 OmScaler clusters multiple OmDB backends and provices data availability, load distribution and data partitioning.
