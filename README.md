@@ -255,3 +255,11 @@ KeyFile =               # private key file for https protocol
 AccessLog = /usr/local/omdb/logs/access-20060102150405.log
 LogRotate = 3600
 ```
+
+OmScaler - Larger OmDB Cluster
+==============================
+OmScaler clusters multiple OmDB backends and provices data availability, load distribution and data partitioning.
+The design of OmScaler is focused on providing the architectural fundamentals that works in extream scale in the practice.
+Check out README.OmScaler.md for more details.
+
+
