@@ -37,6 +37,21 @@ import (
 	"strings"
 )
 
+func isWebBrowser(r *http.Request) bool {
+	agent := r.Header.Get("User-Agent")
+	if len(agent) == 0 {
+		return false
+	}
+	if strings.HasPrefix(agent, "Mozilla/5.0 (") {
+		if strings.Contains(agent, " Firefox/") == true ||
+			strings.Contains(agent, " Chrome/") == true ||
+			strings.Contains(agent, "MSIE ") == true {
+			return true
+		}
+	}
+	return false
+}
+
 func getHttpBody(r *http.Request) []byte {
 	if r.ContentLength == 0 {
 		return nil

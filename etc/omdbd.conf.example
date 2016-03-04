@@ -5,22 +5,12 @@
 PidFile = /var/tmp/omdbd.pid
 ErrorLog = /usr/local/omdb/logs/error.log
 Versioning = true
+DeleteOnList = false
+QueryOption = binary,max:1000,maxscan:100000  # default query options
+QueryOptionWebBrowser = binary,max:100,maxscan:100000,html
 MaxKeySize = 255
 MaxValueSize = 0
 StatusUrl = /status
-
-# Default query option
-#   encoding:
-#     binary, url, base64, json
-#   max:
-#     Maximum number of keys to show in key listing.
-#     Set to 0 to disable. 
-#   maxscan:
-#     Maximum number of keys to scan from db when filter is applied.
-#     When filter is applied and ListSize isn't reached, it will try
-#     to scan entire keys until it reached this number.
-#     Set to 0 for unlimited entire db scan.
-QueryOption = binary,max:1000,maxscan:100000
 
 [database]
 Directory = /usr/local/omdb/db

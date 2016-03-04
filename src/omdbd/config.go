@@ -29,14 +29,16 @@ package main
 
 type Config struct {
 	Global struct {
-		Debug        bool // internal variable, not defined in config file
-		PidFile      string
-		ErrorLog     string
-		Versioning   bool
-		MaxKeySize   int
-		MaxValueSize int
-		StatusUrl    string
-		QueryOption  string // default query option.
+		Debug                 bool // internal variable, not defined in config file
+		PidFile               string
+		ErrorLog              string
+		Versioning            bool
+		DeleteOnList          bool
+		QueryOption           string // default query option.
+		QueryOptionWebBrowser string // default query option for web browser clients
+		MaxKeySize            int
+		MaxValueSize          int
+		StatusUrl             string
 	}
 	Database struct {
 		Directory  string

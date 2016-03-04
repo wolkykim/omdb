@@ -39,11 +39,29 @@ import (
 const (
 	HTTP_HEADER_X_TRUNCATED = "X-Omdb-Truncated"
 	HTTP_HEADER_X_NEXT      = "X-Omdb-Next"
+	HTML_HEADER             = "<html><title>" + PRGNAME + "</title><body style='font-size:12px;'>"
+	HTML_TAILER             = "</body></html>"
+	HTML_TOOLBOX            = "" +
+		PRGNAME + " v" + VERSION +
+		"<br>(You're seeing this toolbar because 'html' option is given)<br>" +
+		"<form onSubmit=\"this.action=document.getElementById('k').value;\"><input type='text' id='k' size='8' placeholder='key'><input type='text' name='v' placeholder='value'><input type='submit' value='ADD'></form>" +
+		"<form onSubmit=\"document.getElementById('o').value='filter:'+document.getElementById('o').value;\"><input type='text' id='o' name='o' size='8' placeholder='filter regexp'><input type='submit' value='FILTER'></form>" +
+		"<button type='button' onclick=\"location.href='.'\">refresh</button>" +
+		"<button type='button' onclick=\"location.href='.?o=showversion'\">showversion</button>" +
+		"<button type='button' onclick=\"location.href='.?o=showvalue,url'\">showvalue,url</button>" +
+		"<button type='button' onclick=\"location.href='.?o=showvalue,base64'\">showvalue,base64</button>" +
+		"<button type='button' onclick=\"location.href='.?o=showvalue,json'\">showvalue,json</button>" +
+		"<button type='button' onclick=\"location.href='.?o=json'\">json</button>"
+	HTML_HR = "<hr size='1'>"
 )
 
 func doList(w http.ResponseWriter, r *http.Request, k *KeyInfo, o *UrlOptions) (int, string) {
 	g_info.IncreaseCounter("http.list")
 	timer := time.Now()
+
+	if o.remove == true && conf.Global.DeleteOnList == false {
+		return http.StatusForbidden, "DeleteOnList option is disabled by configuration.."
+	}
 
 	it := dbf.NewIterator(k.db)
 	if it == nil {
@@ -61,8 +79,8 @@ func doList(w http.ResponseWriter, r *http.Request, k *KeyInfo, o *UrlOptions) (
 
 	b := new(bytes.Buffer)
 	var vms []ValueMeta
-	scanCount := 0;
-	listCount := 0;
+	scanCount := 0
+	listCount := 0
 	for ; it.Valid(); it.Next() {
 		scanCount = scanCount + 1
 
@@ -120,6 +138,13 @@ func doList(w http.ResponseWriter, r *http.Request, k *KeyInfo, o *UrlOptions) (
 		}
 	}
 
+	if o.html {
+		w.Write([]byte(HTML_HEADER))
+		w.Write([]byte(HTML_TOOLBOX))
+		w.Write([]byte("<br>o=" + o.String()))
+		w.Write([]byte(HTML_HR))
+		w.Write([]byte("<pre>"))
+	}
 	if len(vms) > 0 {
 		bb, err := json.MarshalIndent(vms, "", "\t")
 		if err != nil {
@@ -129,5 +154,11 @@ func doList(w http.ResponseWriter, r *http.Request, k *KeyInfo, o *UrlOptions) (
 	} else if b.Len() > 0 {
 		w.Write(b.Bytes())
 	}
+
+	if o.html {
+		w.Write([]byte("</pre>"))
+		w.Write([]byte(HTML_TAILER))
+	}
+
 	return http.StatusOK, fmt.Sprint("runtime:", time.Since(timer))
 }

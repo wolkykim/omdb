@@ -67,5 +67,9 @@ func doPut(w http.ResponseWriter, r *http.Request, k *KeyInfo, v []byte, o *UrlO
 		return http.StatusInternalServerError, err.Error()
 	}
 
+	if o.html {
+		w.Write([]byte(fmt.Sprint(time.Since(timer))))
+	}
+
 	return http.StatusOK, fmt.Sprint("runtime:", time.Since(timer))
 }

@@ -42,9 +42,9 @@ const (
 )
 
 type UrlOptions struct {
-	encoding int
-	html     bool
-	remove   bool
+	encoding  int
+	html      bool
+	remove    bool
 
 	// used for list
 	showvalue   bool
@@ -52,6 +52,10 @@ type UrlOptions struct {
 	max         int
 	maxscan     int
 	filter      string
+}
+
+func (o *UrlOptions) String() string {
+	return fmt.Sprintf("%+v", *o)
 }
 
 func httpRequestHandler(w http.ResponseWriter, r *http.Request) (int, string) {
@@ -99,8 +103,14 @@ func parseUrlOptions(r *http.Request) (*UrlOptions, error) {
 		encoding: OUTPUT_ENCODING_BINARY,
 	}
 
-	o := []string{conf.Global.QueryOption}
+	var o []string
+	if len(conf.Global.QueryOptionWebBrowser) > 0 && isWebBrowser(r) == true {
+		o = append(o, []string{conf.Global.QueryOptionWebBrowser}...)
+	} else {
+		o = append(o, []string{conf.Global.QueryOption}...)
+	}
 	o = append(o, r.Form["o"]...)
+
 	if o != nil {
 		for _, opt := range o {
 			for _, v := range strings.Split(opt, ",") {
