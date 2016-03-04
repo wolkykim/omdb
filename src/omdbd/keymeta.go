@@ -31,6 +31,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"net/url"
 )
 
 const (
@@ -73,14 +74,18 @@ func parseKeyInfo(urlpath string) (*KeyInfo, error) {
 		return nil, fmt.Errorf("Invalid urlpath. %s", urlpath)
 	}
 
-	name := tokens[2]
+	db, _ := url.QueryUnescape(tokens[1])
+	if len(db) == 0 {
+		return nil, fmt.Errorf("Invalid urlpath. %s", urlpath)
+	}
+	name, _ := url.QueryUnescape(tokens[2])
 	if len(name) == 0 {
 		name = "/"
 	}
 
 	return &KeyInfo{
 		path: path,
-		db:   tokens[1],
+		db:   db,
 		name: []byte(name),
 	}, nil
 }
