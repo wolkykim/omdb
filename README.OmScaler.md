@@ -25,6 +25,4 @@ What about OmScaler's linear partitioning?
 * Isolated failure. Even if serious of server failure happens, only that range of data gets out of service.
 * No index is needed for key iteration.
 
-OmScaler is currently in-progress development
-=============================================
-Your +1 Star and comments would accelerate the development.
+Note) OmScaler is not publicly available, please contact the author.
