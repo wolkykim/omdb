@@ -20,7 +20,7 @@ __EOF__
 
 do_setup() {
 	cd src
-	[[ ! -d leveldb ]] && git clone https://github.com/google/leveldb.git && (cd leveldb; git checkout v1.18; make)
+	[[ ! -d leveldb ]] && git clone https://github.com/google/leveldb.git && (cd leveldb; git checkout v1.20; make)
 	cd ../
 	[[ ! -f /usr/lib64/libleveldb.so ]] && [[ ! -f /usr/lib/libleveldb.so ]] && echo "Need to install dependent libraries first." && echo "Run 'sudo make install-deps' then re-run this." && exit 1
 
@@ -37,7 +37,7 @@ do_install() {
 	[[ -f /usr/lib64/libleveldb.so ]] || [[ -f /usr/lib/libleveldb.so ]] && echo "leveldb already installed." && return
 	[[ $UID != 0 ]] && echo "must be root permission to install" && exit 1
 	for DIR in /usr/lib64 /usr/lib; do
-		[[ -d $DIR ]] && echo "Installing leveldb into $DIR/" && cp -v src/leveldb/libleveldb.* $DIR/ && break
+		[[ -d $DIR ]] && echo "Installing leveldb into $DIR/" && cp -v src/leveldb/out-shared/libleveldb.* src/leveldb/out-static/libleveldb.* $DIR/ && break
 	done
 }
 
