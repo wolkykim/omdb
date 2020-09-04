@@ -232,8 +232,8 @@ Option format is "o=option,option:val,..."
 
 OmScaler - Larger OmDB Cluster
 ==============================
-OmScaler clusters multiple OmDB backends and provices data availability, load distribution and data partitioning.
-The design of OmScaler is focused on providing the architectural fundamentals that works in extream scale in the practice.
+OmScaler clusters multiple OmDB backends then provides orchestrated data availability, load distribution and data partitioning.
+The design of OmScaler is focused on providing the architectural fundamentals that works in extream scale in the real world.
 Check out README.OmScaler.md for more details. Note) OmScaler is not publicly available, please contact the author.
 
 
