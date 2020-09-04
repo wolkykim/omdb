@@ -24,12 +24,6 @@ $ sudo cp etc/omdbd.conf.example etc/omdbd.conf
 $ bin/omdbd -c etc/omdbd.conf -d
 ```
 
-Demo & Playground
-=================
-Here's a demo service. Freel free to play with it.
-
-* http://omdb.theaddr.com:8081/testdb/
-
 APIs
 ====
 
